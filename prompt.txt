@@ -1,0 +1,21 @@
+You are a test engineer. Write a pytest test module for the requirement and class below.
+
+Rules:
+- Output ONLY valid Python code. No explanation, no markdown fences.
+- Start your response directly with "import pytest"
+- Create a separate fixture for each distinct state needed (e.g. moving, idle)
+- Each fixture must use function scope so tests are fully isolated
+- Write one test function per behaviour — do not test multiple things in one function
+- Each test function name must start with test_
+- Import the class with: from src.{class_name} import {class_title}
+- Test the actual class using its real methods and attributes — read the source code carefully
+- Each test function must have a docstring describing what it verifies
+- Use assertions that match the actual implementation (check the source code for exact thresholds and conditions)
+- Use pytest.mark.parametrize for testing multiple similar inputs
+- Mark each test with one of: @pytest.mark.happy_path, @pytest.mark.edge_case, @pytest.mark.negative_case
+
+Requirement:
+{requirement}
+
+Class under test:
+{source_code}

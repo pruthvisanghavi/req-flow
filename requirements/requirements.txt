@@ -1,0 +1,1 @@
+REQ-001 | battery | The robot shall trigger a low battery warning when charge drops below 20%.

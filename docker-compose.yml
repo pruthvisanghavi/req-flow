@@ -1,0 +1,64 @@
+services:
+
+  ollama:
+    build:
+      context: .
+      dockerfile: Dockerfile.ollama
+    ports:
+      - "11438:11434"
+    volumes:
+      - ollama_models:/root/.ollama
+      - /usr/lib/x86_64-linux-gnu/libcuda.so.535.183.01:/usr/lib/x86_64-linux-gnu/libcuda.so.1:ro
+    environment:
+      - OLLAMA_HOST=0.0.0.0:11434
+      - CUDA_VISIBLE_DEVICES=0
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,utility
+    entrypoint: []
+    command: ["/usr/local/bin/start-ollama.sh"]
+    runtime: nvidia
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434/api/tags"]
+      interval: 30s
+      timeout: 15s
+      retries: 5
+      start_period: 180s
+    restart: unless-stopped
+
+  pipeline:
+    build: .
+    depends_on:
+      ollama:
+        condition: service_healthy
+    volumes:
+      - .:/app
+    environment:
+      - OLLAMA_URL=http://ollama:11434/api/chat
+      - OLLAMA_MODEL=qwen3:8b
+      - CI=false               # false = interactive, true = auto-approve
+    stdin_open: true
+    tty: true
+
+  jenkins:
+    image: jenkins/jenkins:lts
+    container_name: req_flow_jenkins
+    ports:
+      - "8080:8080"
+      - "50000:50000"
+    volumes:
+      - jenkins_home:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock  # so Jenkins can run docker compose
+    environment:
+      - JAVA_OPTS=-Djenkins.install.runSetupWizard=false
+    restart: unless-stopped
+
+volumes:
+  ollama_models:
+  jenkins_home:
