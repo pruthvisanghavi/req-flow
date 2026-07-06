@@ -3,7 +3,6 @@
 Requirements go in. Tests flow out.
 
 AI-powered test generation using a local Qwen LLM (via Ollama).
-Built as a demo for Field AI — Test Infrastructure Engineer.
 
 ## How it works
 
